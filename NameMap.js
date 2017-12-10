@@ -1,6 +1,8 @@
 import React from 'react'
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl'
 
+import config from './config'
+
 export default class NameMap extends React.Component {
   constructor() {
     super()
@@ -11,7 +13,7 @@ export default class NameMap extends React.Component {
   }
 
   componentDidMount() {
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGF0YXJpZmZpYyIsImEiOiJjamF6ajVtNGMwbnFvMnduMjRib2p3ZDhsIn0.vCAR2WQrwxRPisWy7gTgpQ';
+    mapboxgl.accessToken = config.accessToken;
     var map = new mapboxgl.Map({
       container: 'name-map',
       style: 'mapbox://styles/mapbox/light-v9',
@@ -24,7 +26,7 @@ export default class NameMap extends React.Component {
         "id": "districts",
         "source": {
           type: "geojson",
-          data: "https://api.mapbox.com/datasets/v1/datariffic/cjazl0x06878o2xr1r0cznmxo/features?access_token=pk.eyJ1IjoiZGF0YXJpZmZpYyIsImEiOiJjamF6ajVtNGMwbnFvMnduMjRib2p3ZDhsIn0.vCAR2WQrwxRPisWy7gTgpQ",
+          data: `https://api.mapbox.com/datasets/v1/datariffic/cjazl0x06878o2xr1r0cznmxo/features?access_token=${config.accessToken}`,
         },
         "type": "line"
       })

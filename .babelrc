@@ -10,6 +10,11 @@
     "external-helpers",
     "transform-object-rest-spread",
     "transform-react-jsx",
-    "transform-strict-mode"
+    "transform-strict-mode",
+    [
+      "babel-plugin-dotenv", {
+        "replacedModuleName": "babel-dotenv"
+      }
+    ]
   ]
 }
