@@ -12,17 +12,15 @@ export default class NameMap extends React.Component {
 
     this.state = {
       map: null,
-      names: []
+      layer: null,
+      names: [],
     }
   }
 
-  componentDidMount() {
-    fetch(NAMES_API)
-      .then(response => response.json())
-      .then(data => this.setState({ names: data.features }));
+  initializeMap(cb) {
+    mapboxgl.accessToken = config.accessToken
 
-    mapboxgl.accessToken = config.accessToken;
-    var map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: 'name-map',
       style: 'mapbox://styles/mapbox/light-v9',
       center: [13.2846504, 52.5069704],
@@ -33,14 +31,93 @@ export default class NameMap extends React.Component {
       map.addLayer({
         "id": "districts",
         "source": {
-          type: "geojson",
-          data: DISTRICTS_API,
+          "type": "geojson",
+          "data": DISTRICTS_API,
         },
         "type": "line"
       })
-    })
 
-    this.setState({ map })
+      this.setState({ map }, cb)
+    })
+  }
+
+  // fetchNames() {
+  //   fetch(NAMES_API)
+  //     .then(response => response.json())
+  //     .then(data => this.setState({ names: data }))
+  // }
+
+  fetchNames() {
+    this.setState({
+      names: {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [13.2846504, 52.5069704],
+            },
+            "properties": {
+              "firstname": "Romana",
+              "count": "1",
+              "gender": "w",
+              "district": "1",
+            },
+          }, {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [13.41861, 52.49887],
+            },
+            "properties": {
+              "firstname": "Tais",
+              "count": "1",
+              "gender": "w",
+              "district": "11",
+            }
+          }
+        ]
+      }
+    }, () => {
+      this.setState({
+        layer: "top-names"
+      })
+    })
+  }
+
+  filterNames() {
+    return this.state.names
+  }
+
+  setLayer() {
+    this.state.map.addLayer({
+      "id": "top-names",
+      "type": "symbol",
+      "source": {
+        "type": "geojson",
+        "data": this.filterNames("top-names"),
+      },
+      "layout": {
+        "icon-image": "harbor-15",
+        "text-field": "{firstname} ({count})",
+        "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+        "text-offset": [0, 0.6],
+        "text-anchor": "top",
+      }
+    })
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if(nextState.layer !== this.state.layer) {
+      this.setLayer(nextState.layer)
+    }
+  }
+
+  componentDidMount() {
+    this.initializeMap( () => {
+      this.fetchNames()
+    })
   }
 
   render() {
