@@ -13,7 +13,7 @@ export default class NameMap extends React.Component {
     this.state = {
       map: null,
       layer: null,
-      names: [],
+      names: {},
     }
   }
 
@@ -41,53 +41,27 @@ export default class NameMap extends React.Component {
     })
   }
 
-  // fetchNames() {
-  //   fetch(NAMES_API)
-  //     .then(response => response.json())
-  //     .then(data => this.setState({ names: data }))
-  // }
-
   fetchNames() {
-    this.setState({
-      names: {
-        "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": [13.2846504, 52.5069704],
-            },
-            "properties": {
-              "firstname": "Romana",
-              "count": "1",
-              "gender": "w",
-              "district": "1",
-            },
-          }, {
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": [13.41861, 52.49887],
-            },
-            "properties": {
-              "firstname": "Tais",
-              "count": "1",
-              "gender": "w",
-              "district": "11",
-            }
-          }
-        ]
-      }
-    }, () => {
-      this.setState({
-        layer: "top-names"
+    fetch(NAMES_API)
+      .then(response => response.json())
+      .then((data) => {
+        this.setState({ names: data, layer: "top-names" }, () => {
+          this.setLayer("top-names")
+        })
       })
-    })
   }
 
-  filterNames() {
-    return this.state.names
+  filterNames(filter) {
+    var filtered = {
+      "type": "FeatureCollection",
+      "features": [
+        this.state.names.features[Math.floor(Math.random() * this.state.names.features.length)]
+      ],
+    }
+
+    filtered.features[0].geometry.coordinates = [13.41861, 52.49887]
+
+    return filtered
   }
 
   setLayer() {
@@ -108,11 +82,11 @@ export default class NameMap extends React.Component {
     })
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if(nextState.layer !== this.state.layer) {
-      this.setLayer(nextState.layer)
-    }
-  }
+  // componentWillUpdate(nextProps, nextState) {
+  //   if(nextState.layer !== this.state.layer) {
+  //     this.setLayer(nextState.layer)
+  //   }
+  // }
 
   componentDidMount() {
     this.initializeMap( () => {
